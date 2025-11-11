@@ -1,0 +1,778 @@
+{
+	"info": {
+		"_postman_id": "cv-api-collection-2025",
+		"name": "CV-API",
+		"description": "Coleção completa de endpoints da CV-API para gerenciamento de currículos.\n\n**Tecnologias:** Express, Node.js, Drizzle ORM, Neon Database\n\n**URL Base:** `{{base_url}}/api/v1`\n\n**Variáveis:**\n- `base_url`: URL base da API (padrão: http://localhost:3000)\n- `profile_id`: ID do perfil (preencher após criar um perfil)\n- `skill_id`: ID da habilidade (preencher após listar habilidades)\n- `experience_id`: ID da experiência\n- `education_id`: ID da formação\n- `project_id`: ID do projeto\n- `social_link_id`: ID do link social",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "cv-api"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Verifica o status da aplicação. Retorna OK se o servidor estiver funcionando."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/health",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"health"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"status\": \"OK\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoint para verificar o status da aplicação"
+		},
+		{
+			"name": "Profiles",
+			"item": [
+				{
+					"name": "Listar todos os perfis",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles"
+							]
+						},
+						"description": "Lista todos os perfis cadastrados (versão simplificada, inclui apenas skills)."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar perfil",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"profile_id\", response.id);",
+									"    console.log(\"Profile ID salvo:\", response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"carlos.dias@email.com\",\n  \"name\": \"Carlos Dias\",\n  \"headline\": \"Engenheiro de DevOps\",\n  \"bio\": \"Profissional focado em automação e CI/CD.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles"
+							]
+						},
+						"description": "Cria um novo perfil. O email deve ser único.\n\n**Campos obrigatórios:**\n- `email`: Email válido e único\n- `name`: Nome do perfil\n\n**Campos opcionais:**\n- `headline`: Título profissional\n- `bio`: Biografia do perfil"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter perfil por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Obtém um perfil completo, incluindo todas as suas relações (experiências, educação, projetos, links sociais, habilidades)."
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar perfil",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"headline\": \"Especialista em React e Next.js\",\n  \"bio\": \"Novo bio atualizado.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Atualiza os dados básicos de um perfil. Todos os campos são opcionais - apenas os campos enviados serão atualizados."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar perfil",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Deleta um perfil e todos os seus relacionamentos em cascata (experiências, educação, projetos, links sociais, habilidades)."
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar habilidade ao perfil",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/{{profile_id}}/skills/{{skill_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"{{profile_id}}",
+								"skills",
+								"{{skill_id}}"
+							]
+						},
+						"description": "Associa uma habilidade existente a um perfil. Primeiro liste as habilidades disponíveis para obter o `skill_id`."
+					},
+					"response": []
+				},
+				{
+					"name": "Remover habilidade do perfil",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profiles/{{profile_id}}/skills/{{skill_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"{{profile_id}}",
+								"skills",
+								"{{skill_id}}"
+							]
+						},
+						"description": "Desassocia uma habilidade de um perfil."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar perfis de currículos"
+		},
+		{
+			"name": "Skills",
+			"item": [
+				{
+					"name": "Listar todas as habilidades",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.length > 0) {",
+									"        pm.collectionVariables.set(\"skill_id\", response[0].id);",
+									"        console.log(\"Primeira Skill ID salva:\", response[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/skills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"skills"
+							]
+						},
+						"description": "Lista todas as habilidades disponíveis na plataforma (taxonomia). Use os IDs retornados para associar habilidades aos perfis."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar habilidade",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"TypeScript\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/skills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"skills"
+							]
+						},
+						"description": "Cria uma nova habilidade na taxonomia. Se a habilidade já existir (pelo nome), retorna a existente. O nome será normalizado (lowercase)."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar habilidades (taxonomia)"
+		},
+		{
+			"name": "Experiences",
+			"item": [
+				{
+					"name": "Criar experiência",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"experience_id\", response.id);",
+									"    console.log(\"Experience ID salvo:\", response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Engenheiro de Software Pleno\",\n  \"company\": \"Startup Y\",\n  \"location\": \"São Paulo, SP\",\n  \"startDate\": \"2022-01-01T00:00:00.000Z\",\n  \"endDate\": \"2023-12-31T00:00:00.000Z\",\n  \"description\": \"Desenvolvimento de features com React.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/experiences/profile/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"experiences",
+								"profile",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Adiciona uma nova experiência profissional a um perfil.\n\n**Campos obrigatórios:**\n- `title`: Cargo/título\n- `company`: Nome da empresa\n- `startDate`: Data de início (ISO 8601)\n\n**Campos opcionais:**\n- `location`: Localização\n- `endDate`: Data de término (null para emprego atual)\n- `description`: Descrição da experiência"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar experiência",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"endDate\": \"2023-12-31T00:00:00.000Z\",\n  \"description\": \"Descrição atualizada.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/experiences/{{experience_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"experiences",
+								"{{experience_id}}"
+							]
+						},
+						"description": "Atualiza uma experiência específica. Todos os campos são opcionais."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar experiência",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/experiences/{{experience_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"experiences",
+								"{{experience_id}}"
+							]
+						},
+						"description": "Remove uma experiência específica."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar experiências profissionais"
+		},
+		{
+			"name": "Education",
+			"item": [
+				{
+					"name": "Criar formação",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"education_id\", response.id);",
+									"    console.log(\"Education ID salvo:\", response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"institution\": \"Universidade X\",\n  \"degree\": \"Bacharelado em Ciência da Computação\",\n  \"fieldOfStudy\": \"Ciência da Computação\",\n  \"startDate\": \"2015-01-01T00:00:00.000Z\",\n  \"endDate\": \"2019-12-31T00:00:00.000Z\",\n  \"description\": \"Formação completa em ciência da computação.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/education/profile/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"education",
+								"profile",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Adiciona uma nova formação acadêmica a um perfil.\n\n**Campos obrigatórios:**\n- `institution`: Nome da instituição\n- `degree`: Grau obtido\n- `startDate`: Data de início (ISO 8601)\n\n**Campos opcionais:**\n- `fieldOfStudy`: Área de estudo\n- `endDate`: Data de término (null se ainda estiver cursando)\n- `description`: Descrição da formação"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar formação",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"degree\": \"Mestrado em Ciência da Computação\",\n  \"endDate\": \"2021-12-31T00:00:00.000Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/education/{{education_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"education",
+								"{{education_id}}"
+							]
+						},
+						"description": "Atualiza uma formação específica. Todos os campos são opcionais."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar formação",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/education/{{education_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"education",
+								"{{education_id}}"
+							]
+						},
+						"description": "Remove uma formação específica."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar formações acadêmicas"
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Criar projeto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"project_id\", response.id);",
+									"    console.log(\"Project ID salvo:\", response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"E-commerce Platform\",\n  \"description\": \"Plataforma completa de e-commerce desenvolvida em React.\",\n  \"url\": \"https://ecommerce-example.com\",\n  \"repositoryUrl\": \"https://github.com/user/ecommerce\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/projects/profile/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								"profile",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Adiciona um novo projeto ao portfólio de um perfil.\n\n**Campos obrigatórios:**\n- `name`: Nome do projeto\n- `description`: Descrição do projeto\n\n**Campos opcionais:**\n- `url`: URL do projeto (deve ser uma URL válida)\n- `repositoryUrl`: URL do repositório (deve ser uma URL válida)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar projeto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Descrição atualizada do projeto.\",\n  \"url\": \"https://new-url.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/projects/{{project_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								"{{project_id}}"
+							]
+						},
+						"description": "Atualiza um projeto específico. Todos os campos são opcionais."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar projeto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/projects/{{project_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								"{{project_id}}"
+							]
+						},
+						"description": "Remove um projeto específico."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar projetos do portfólio"
+		},
+		{
+			"name": "Social Links",
+			"item": [
+				{
+					"name": "Criar link social",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"social_link_id\", response.id);",
+									"    console.log(\"Social Link ID salvo:\", response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"platform\": \"LinkedIn\",\n  \"url\": \"https://linkedin.com/in/user\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/socialLinks/profile/{{profile_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"socialLinks",
+								"profile",
+								"{{profile_id}}"
+							]
+						},
+						"description": "Adiciona um novo link social a um perfil.\n\n**Campos obrigatórios:**\n- `platform`: Nome da plataforma (ex: LinkedIn, GitHub, Twitter)\n- `url`: URL do perfil (deve ser uma URL válida)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar link social",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\": \"https://linkedin.com/in/new-profile\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/socialLinks/{{social_link_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"socialLinks",
+								"{{social_link_id}}"
+							]
+						},
+						"description": "Atualiza um link social específico. Todos os campos são opcionais."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar link social",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/socialLinks/{{social_link_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"socialLinks",
+								"{{social_link_id}}"
+							]
+						},
+						"description": "Remove um link social específico."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciar links sociais (LinkedIn, GitHub, etc.)"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "URL base da API"
+		},
+		{
+			"key": "profile_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do perfil (UUID). Preencher após criar um perfil ou usar um ID existente."
+		},
+		{
+			"key": "skill_id",
+			"value": "",
+			"type": "string",
+			"description": "ID da habilidade (UUID). Preencher após listar habilidades."
+		},
+		{
+			"key": "experience_id",
+			"value": "",
+			"type": "string",
+			"description": "ID da experiência (UUID). Preencher após criar uma experiência."
+		},
+		{
+			"key": "education_id",
+			"value": "",
+			"type": "string",
+			"description": "ID da formação (UUID). Preencher após criar uma formação."
+		},
+		{
+			"key": "project_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do projeto (UUID). Preencher após criar um projeto."
+		},
+		{
+			"key": "social_link_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do link social (UUID). Preencher após criar um link social."
+		}
+	]
+}

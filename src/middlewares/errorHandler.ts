@@ -1,0 +1,61 @@
+import { Request, Response, NextFunction } from 'express';
+
+// Classe de Erro customizada
+export class ApiError extends Error {
+    public statusCode: number;
+
+    constructor(statusCode: number, message: string) {
+        super(message);
+        this.statusCode = statusCode;
+        this.name = 'ApiError';
+    }
+}
+
+// O middleware de tratamento de erros
+export const errorHandler = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    console.error('Erro:', err);
+
+    // Erros customizados da API
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            message: err.message,
+        });
+    }
+
+    // Erros de validação do Zod
+    if (err.name === 'ZodError') {
+        return res.status(400).json({
+            message: 'Erro de validação',
+            errors: (err as any).errors,
+        });
+    }
+
+    // Erros de banco de dados (PostgreSQL/Neon)
+    if (err.message && err.message.includes('duplicate key')) {
+        return res.status(409).json({
+            message: 'Já existe um registro com este valor único',
+        });
+    }
+
+    if (err.message && err.message.includes('foreign key')) {
+        return res.status(400).json({
+            message: 'Referência inválida',
+        });
+    }
+
+    if (err.message && err.message.includes('not found')) {
+        return res.status(404).json({
+            message: 'Registro não encontrado',
+        });
+    }
+
+    // Erros genéricos
+    return res.status(500).json({
+        message: 'Erro interno do servidor',
+    });
+};
