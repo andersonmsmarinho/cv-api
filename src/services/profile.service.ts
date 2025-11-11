@@ -1,5 +1,6 @@
 import { ProfileRepository } from '../repositories/profile.repository';
 import type { NewProfile } from '../../drizzle/schema';
+import { ApiError } from '../middlewares/errorHandler';
 
 export const ProfileService = {
     getAllProfiles: async () => {
@@ -16,7 +17,7 @@ export const ProfileService = {
         // Lógica de negócios (ex: verificar se email já existe)
         const existing = await ProfileRepository.findByEmail(data.email);
         if (existing) {
-            throw new Error('Email já cadastrado'); // Será capturado pelo errorHandler
+            throw new ApiError(409, 'Email já cadastrado');
         }
         return ProfileRepository.create(data);
     },
