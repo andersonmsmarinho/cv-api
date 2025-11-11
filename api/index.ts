@@ -1,6 +1,7 @@
 // Carregar variáveis de ambiente antes de importar o app
-// (no Vercel, as variáveis são injetadas automaticamente, mas dotenv ajuda no desenvolvimento)
-if (process.env.NODE_ENV !== 'production') {
+// (no Vercel, as variáveis são injetadas automaticamente, mas dotenv ajuda no desenvolvimento local)
+// Carregar dotenv apenas se não estiver no Vercel
+if (!process.env.VERCEL) {
   const dotenv = require('dotenv');
   dotenv.config();
 }
