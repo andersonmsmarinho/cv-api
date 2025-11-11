@@ -14,9 +14,9 @@ export class ApiError extends Error {
 // O middleware de tratamento de erros
 export const errorHandler = (
     err: Error,
-    req: Request,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) => {
     console.error('Erro:', err);
 

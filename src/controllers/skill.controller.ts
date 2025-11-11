@@ -6,7 +6,7 @@ const asyncHandler = (fn: Function) => (req: Request, res: Response, next: NextF
 };
 
 export const SkillController = {
-    getAll: asyncHandler(async (req: Request, res: Response) => {
+    getAll: asyncHandler(async (_req: Request, res: Response) => {
         const skills = await SkillService.getAllSkills();
         res.status(200).json(skills);
     }),

@@ -8,7 +8,7 @@ const asyncHandler = (fn: Function) => (req: Request, res: Response, next: NextF
 };
 
 export const ProfileController = {
-    getAll: asyncHandler(async (req: Request, res: Response) => {
+    getAll: asyncHandler(async (_req: Request, res: Response) => {
         const profiles = await ProfileService.getAllProfiles();
         res.status(200).json(profiles);
     }),
